@@ -33,16 +33,19 @@ def getData():
 
 	while not '\n' in raw_data:
 		try:
-			rec = s.recv(1) # Add timeout for that
+			rec = s.recv(1)  # Receive 1 byte at a time
 			if len(rec) == 0:
 				rospy.logerr("Socket closed by the DVL, reopening")
 				connect()
 				continue
+			# Decode the received bytes into a string
+			rec = rec.decode('utf-8')
 		except socket.timeout as err:
 			rospy.logerr("Lost connection with the DVL, reinitiating the connection: {}".format(err))
 			connect()
 			continue
 		raw_data = raw_data + rec
+
 	raw_data = oldJson + raw_data
 	oldJson = ""
 	raw_data = raw_data.split('\n')
